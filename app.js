@@ -8,36 +8,42 @@ var config = {
 };
 
 firebase.initializeApp(config);
-
 var database = firebase.database();
-var currentDate = moment(moment(), "DD/MM/YY");
-
-
 
 $("#submit-input").on("click", function () {
     event.preventDefault();
-    var name = $("#name-input").val().trim();
-    var role = $("#role-input").val().trim();
-    var date = $("#date-input").val().trim();
-    var rate = parseInt($("#rate-input").val().trim());
+    var trainname = $("#name-input").val();
+    var traindest = $("#dest-input").val();
+    var trainfreq = $("#freq-input").val();
+    var trainst = $("#time-input").val();
 
     database.ref().push({
-        name: name,
-        role: role,
-        date: date,
-        rate: rate,
-        dateAdded: firebase.database.ServerValue.TIMESTAMP
+        trainname: trainname,
+        traindest: traindest,
+        trainfreq: trainfreq,
+        trainst: trainst,
     });
 });
 
 database.ref().on("child_added", function (snapshot) {
-    var formattedDate = moment(snapshot.val().date, "DD/MM/YY"); 
-    var monthsWorked = formattedDate.diff(currentDate, "months");
-    var totalPayout = monthsWorked * snapshot.val().rate
-    $("#empName").append($("<tr>").text(snapshot.val().name));
-    $("#empRole").append($("<tr>").text(snapshot.val().role));
-    $("#empDate").append($("<tr>").text(snapshot.val().date));
-    $("#empRate").append($("<tr>").text(snapshot.val().rate));
-    $("#empBilled").append($("<tr>").text(totalPayout));
-    $("#empWorked").append($("<tr>").text(monthsWorked));
+    var currentTime = moment();
+    var tFreq = snapshot.val().trainfreq;
+    var tStart = snapshot.val().trainst;
+    var tStartConverted = moment(tStart, "HH:mm").subtract(1, "years");
+    var timeDiff = moment().diff(moment(tStartConverted), "minutes");
+    var remainder = timeDiff % tFreq;
+    var minutesLeft = tFreq - remainder;
+    var tNext = moment().add(minutesLeft, "minutes"); 
+    var tNextFormated = moment(tNext).format("HH:mm A");
+
+    // $("#trainname").append($("<tr>").text(snapshot.val().trainname));
+    // $("#traindest").append($("<tr>").text(snapshot.val().traindest));
+    // $("#trainfreq").append($("<tr>").text(snapshot.val().trainfreq));
+    // $("#trainna").append($("<tr>").text());
+    // $("#trainst").append($("<tr>").text(minutesLeft));
+
+    $("#table-trains > tbody").append("<tr><td>" + snapshot.val().trainname + "</td><td>" + snapshot.val().traindest + "</td><td>" +
+    snapshot.val().trainfreq + "</td><td>" + tNextFormated + "</td><td>" + minutesLeft + "</td><td>");
+//   });
+  
 });
