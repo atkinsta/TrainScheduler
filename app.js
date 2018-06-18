@@ -36,14 +36,7 @@ database.ref().on("child_added", function (snapshot) {
     var tNext = moment().add(minutesLeft, "minutes"); 
     var tNextFormated = moment(tNext).format("HH:mm A");
 
-    // $("#trainname").append($("<tr>").text(snapshot.val().trainname));
-    // $("#traindest").append($("<tr>").text(snapshot.val().traindest));
-    // $("#trainfreq").append($("<tr>").text(snapshot.val().trainfreq));
-    // $("#trainna").append($("<tr>").text());
-    // $("#trainst").append($("<tr>").text(minutesLeft));
-
     $("#table-trains > tbody").append("<tr><td>" + snapshot.val().trainname + "</td><td>" + snapshot.val().traindest + "</td><td>" +
     snapshot.val().trainfreq + "</td><td>" + tNextFormated + "</td><td>" + minutesLeft + "</td><td>");
-//   });
   
 });
